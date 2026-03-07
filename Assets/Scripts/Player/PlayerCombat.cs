@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -20,12 +21,27 @@ public class PlayerCombat : MonoBehaviour
     public Transform aoeCenter;
     public LayerMask enemyLayer;
 
+    [Header("Chicken Swing Visual")]
+    public GameObject chickenSwingEffectPrefab;
+    public Transform chickenSwingSpawn;
+    public float chickenSwingEffectLifeTime = 0.25f;
+    public float chickenSwingOffsetX = 0.8f;
+
+    [Header("Chicken Swing Setup")]
+    public Transform chickenSwingPivot;
+    public ChickenSwingHitbox chickenSwingHitbox;
+    public float swingDuration = 0.18f;
+    public float swingAngle = 120f;
+
     private float nextProjectileTime;
     private float nextAoeTime;
+    private bool isSwinging = false;
 
     void Start()
     {   
         if(controller == null) controller = GetComponent<PlayerController2D>();
+        if (chickenSwingHitbox != null)
+            chickenSwingHitbox.gameObject.SetActive(false);
     }
     void Update()
     {
@@ -37,7 +53,9 @@ public class PlayerCombat : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X) && Time.time >= nextAoeTime)
         {
-            DoChickenLegSwing();
+            StartCoroutine(DoChickenLegSwing());
+
+            //DoChickenLegSwing();
             nextAoeTime = Time.time + aoeCooldown;
         }
     }
@@ -61,21 +79,96 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void DoChickenLegSwing()
+    void DoChickenLegSwing2()
     {
         if (!aoeCenter) aoeCenter = transform;
+
+        ShowChickenSwingEffect();
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(aoeCenter.position, aoeRadius, enemyLayer);
         foreach (var h in hits)
         {
+            // 전방 판정 필터
+            Vector2 toEnemy = h.transform.position - transform.position;
+
+            if (Mathf.Sign(toEnemy.x) != controller.FacingDir)
+                continue;
+
             Health hp = h.GetComponent<Health>();
-            if (hp) hp.TakeDamage(aoeDamage);
+            if (hp != null)
+            {
+                hp.TakeDamage(aoeDamage);
+            }
         }
 
         Debug.Log("황올 스매쉬!!");
     }
 
-    void onDrawnGizmosSelected()
+    private IEnumerator DoChickenLegSwing()
+    {
+        if (chickenSwingPivot == null || chickenSwingHitbox == null)
+        {
+            Debug.LogWarning("ChickenSwingPivot 또는 ChickenSwingHitbox가 연결되지 않았습니다.");
+            yield break;
+        }
+
+        isSwinging = true;
+
+        // 방향 반영
+        Vector3 pivotScale = chickenSwingPivot.localScale;
+        pivotScale.x = Mathf.Abs(pivotScale.x) * controller.FacingDir;
+        chickenSwingPivot.localScale = pivotScale;
+
+        // 시작 / 끝 각도
+        float startZ = controller.FacingDir == 1 ? swingAngle * 0.5f : -swingAngle * 0.5f;
+        float endZ = controller.FacingDir == 1 ? -swingAngle * 0.5f : swingAngle * 0.5f;
+
+        chickenSwingPivot.localRotation = Quaternion.Euler(0f, 0f, startZ);
+
+        chickenSwingHitbox.BeginSwing(aoeDamage);
+
+        float elapsed = 0f;
+        while (elapsed < swingDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / swingDuration;
+            float currentZ = Mathf.Lerp(startZ, endZ, t);
+            chickenSwingPivot.localRotation = Quaternion.Euler(0f, 0f, currentZ);
+            yield return null;
+        }
+
+        chickenSwingHitbox.EndSwing();
+        chickenSwingPivot.localRotation = Quaternion.identity;
+
+        isSwinging = false;
+    }
+
+    void ShowChickenSwingEffect()
+    {
+        if (chickenSwingEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos;
+
+        if (chickenSwingSpawn != null)
+        {
+            spawnPos = chickenSwingSpawn.position;
+        }
+        else
+        {
+            spawnPos = transform.position;
+            spawnPos.x += controller.FacingDir * chickenSwingOffsetX;
+        }
+
+        GameObject effect = Instantiate(chickenSwingEffectPrefab, spawnPos, Quaternion.identity);
+
+        Vector3 scale = effect.transform.localScale;
+        scale.x = Mathf.Abs(scale.x) * controller.FacingDir;
+        effect.transform.localScale = scale;
+
+        Destroy(effect, chickenSwingEffectLifeTime);
+    }
+    void OnDrawGizmosSelected()
     {
         if (!aoeCenter) return;
         Gizmos.color = Color.red;

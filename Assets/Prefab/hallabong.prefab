@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -5738564357364492908}
   - component: {fileID: 1392333519103266862}
   - component: {fileID: 651642803513466406}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: hallabong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 5789710147838307074, guid: db2ba355b1c5993408188d71848b525d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 2
-  lifeTime: 2
+  lifeTime: 1.5
 --- !u!50 &1392333519103266862
 Rigidbody2D:
   serializedVersion: 5

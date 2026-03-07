@@ -10,6 +10,7 @@ public class Health : MonoBehaviour
     public EnemyHealthUI hpBarPrefab;
     private EnemyHealthUI hpBarUI;
 
+    public Transform hpBarAnchor;
 
     void Awake()
     {
@@ -22,7 +23,8 @@ public class Health : MonoBehaviour
         if (canvas != null & hpBarPrefab != null)
         {
             hpBarUI = Instantiate(hpBarPrefab, canvas.transform);
-            hpBarUI.SetTarget(transform);
+            Transform targetToFollow = hpBarAnchor != null ? hpBarAnchor : transform;
+            hpBarUI.SetTarget(targetToFollow);
             hpBarUI.SetHP(currentHp, maxHp);
         }
     }

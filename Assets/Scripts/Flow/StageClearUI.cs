@@ -6,8 +6,10 @@ public class StageClearUI : MonoBehaviour
     public GameObject stageClearPanel;
 
     public string nextSceneName;
+    public SceneFlowManager sceneFlowManager;
 
     private bool isStageClear = false;
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,8 +37,7 @@ public class StageClearUI : MonoBehaviour
         {
             Time.timeScale = 1f;
 
-            if (!string.IsNullOrEmpty(nextSceneName))
-                SceneManager.LoadScene(nextSceneName);
+            if(sceneFlowManager != null) sceneFlowManager.LoadNextScene();
             else
             {
                 Debug.Log("지정된 씬이 없습니다.");
