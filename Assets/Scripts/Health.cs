@@ -1,22 +1,50 @@
+using System;
 using System.Linq.Expressions;
 using UnityEngine;
 
 public class Health : MonoBehaviour
 {
     public int maxHp = 5;
+    public int currentHp;
 
-    public int hp;
+    public EnemyHealthUI hpBarPrefab;
+    private EnemyHealthUI hpBarUI;
+
 
     void Awake()
     {
-        hp = maxHp;
+        currentHp = maxHp;
+    }
+
+    private void Start()
+    {
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas != null & hpBarPrefab != null)
+        {
+            hpBarUI = Instantiate(hpBarPrefab, canvas.transform);
+            hpBarUI.SetTarget(transform);
+            hpBarUI.SetHP(currentHp, maxHp);
+        }
+    }
+
+    public void SetHPBar(EnemyHealthUI bar)
+    {
+        hpBarUI = bar;
+        hpBarUI.SetTarget(transform);
+        hpBarUI.SetHP(currentHp, maxHp);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void TakeDamage(int dmg)
     {
-        hp -= dmg;
-        Debug.Log("now HP: "+ hp);
-        if (hp <= 0)
+        currentHp -= dmg;
+        currentHp = Mathf.Max(currentHp, 0);
+        Debug.Log("now HP: "+ currentHp);
+
+        if (hpBarUI != null)
+        {
+            hpBarUI.SetHP(currentHp, maxHp);
+        }
+        if (currentHp <= 0)
         {
             Die();
         }
@@ -24,6 +52,11 @@ public class Health : MonoBehaviour
 
     void Die()
     {
+        if (hpBarUI != null)
+        {
+            hpBarUI.DestroyBar();
+        }
+
         Destroy(gameObject);
     }
 }
