@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public class EnemyHealthUI : MonoBehaviour
     private Camera mainCam;
     private RectTransform rectTransform;
 
+    public TMP_Text nameText;
     void Awake()
     {
         mainCam = Camera.main;
@@ -21,6 +23,11 @@ public class EnemyHealthUI : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
+    }
+    public void SetName(string enemyName)
+    {
+        if (nameText != null)
+            nameText.text = enemyName;
     }
 
     public void SetHP(int current, int max)

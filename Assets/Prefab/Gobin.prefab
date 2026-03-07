@@ -184,6 +184,7 @@ MonoBehaviour:
   currentHp: 0
   hpBarPrefab: {fileID: 8470816991919266573, guid: d7430d52e575bff4d861399367f4f63a, type: 3}
   hpBarAnchor: {fileID: 8629841543851641229}
+  enemyName: "\uACE0\uBE48"
 --- !u!114 &8168540386249696254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea070ce260efe9145af719a8dd4d5ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 4676917136733892200, guid: de41d0c9e5c3f8d4785f9079c2cebf8b, type: 3}
   moveSpeed: 2
   detectRange: 12
   stopRange: 1.2
