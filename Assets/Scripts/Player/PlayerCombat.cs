@@ -174,4 +174,13 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(aoeCenter.position, aoeRadius);
     }
+    public float GetHallabongCooldownRemaining()
+    {
+        return Mathf.Max(0f, nextProjectileTime - Time.time);
+    }
+
+    public float GetChickenCooldownRemaining()
+    {
+        return Mathf.Max(0f, nextAoeTime - Time.time);
+    }
 }
